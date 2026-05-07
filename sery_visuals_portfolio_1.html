@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Šerý Visual – Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a08;
+  --bg2: #111110;
+  --bg3: #1a1a17;
+  --text: #e8e4d9;
+  --muted: #6b6860;
+  --accent: #c9a96e;
+  --border: rgba(201,169,110,0.15);
+  --border2: rgba(201,169,110,0.08);
+}
+html.light {
+  --bg: #f5f2ec;
+  --bg2: #ede9e0;
+  --bg3: #e4dfd4;
+  --text: #1a1a17;
+  --muted: #8a8378;
+  --accent: #8b6d3f;
+  --border: rgba(139,109,63,0.2);
+  --border2: rgba(139,109,63,0.1);
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; font-weight: 300; overflow-x: hidden; cursor: none; transition: background .4s, color .4s; }
+
+/* THEME TOGGLE */
+.theme-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 50%; background: none; cursor: none; transition: all .3s; color: var(--muted); flex-shrink: 0; }
+.theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+.theme-btn svg { width: 16px; height: 16px; fill: currentColor; transition: opacity .3s; }
+.icon-moon { display: block; }
+.icon-sun { display: none; }
+html.light .icon-moon { display: none; }
+html.light .icon-sun { display: block; }
+
+
+/* CURSOR */
+#cur { position: fixed; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+#cur2 { position: fixed; width: 32px; height: 32px; border: 1px solid rgba(201,169,110,0.4); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: left .08s, top .08s, width .3s, height .3s; }
+
+/* NAV */
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; background: var(--bg); border-bottom: 1px solid var(--border2); transition: background .4s, border-color .4s; }
+.logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; letter-spacing: .25em; color: var(--text); text-decoration: none; }
+.logo span { color: var(--accent); }
+.nav-right { display: flex; align-items: center; gap: 3rem; }
+.nav-links { display: flex; gap: 3rem; list-style: none; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; transition: color .3s; }
+.nav-links a:hover { color: var(--accent); }
+.lang-switch { display: flex; align-items: center; border: 1px solid var(--border); overflow: hidden; }
+.lang-btn { font-family: 'DM Mono', monospace; font-size: .58rem; letter-spacing: .15em; padding: .45rem .9rem; background: none; color: var(--muted); border: none; cursor: none; transition: all .3s; text-transform: uppercase; }
+.lang-btn.active { background: var(--accent); color: var(--bg); }
+.lang-btn:hover:not(.active) { color: var(--accent); }
+.lang-sep { width: 1px; height: 1.1rem; background: var(--border); }
+
+/* HERO */
+.hero { height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 4rem 6rem; position: relative; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 65% 50%, rgba(139,109,63,0.09), transparent 60%); }
+.hero-line { position: absolute; top: 0; right: 20%; width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, var(--border), transparent); opacity: .5; }
+.hero-ghost { position: absolute; top: 50%; left: 4rem; transform: translateY(-50%); font-family: 'Cormorant Garamond', serif; font-size: 14rem; font-weight: 300; color: rgba(201,169,110,0.03); line-height: 1; pointer-events: none; }
+.hero-tag { font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; color: var(--accent); margin-bottom: 2rem; opacity: 0; animation: fadeUp 1s .3s forwards; }
+.hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(4rem, 8vw, 8rem); font-weight: 300; line-height: .95; letter-spacing: -.02em; margin-bottom: 2.5rem; opacity: 0; animation: fadeUp 1s .5s forwards; }
+.hero-title em { font-style: italic; color: var(--accent); }
+.hero-sub { font-size: .72rem; letter-spacing: .12em; color: var(--muted); max-width: 420px; line-height: 2.1; opacity: 0; animation: fadeUp 1s .7s forwards; }
+.hero-scroll { position: absolute; bottom: 3rem; right: 4rem; font-size: .6rem; letter-spacing: .3em; text-transform: uppercase; color: var(--muted); writing-mode: vertical-rl; opacity: 0; animation: fadeUp 1s 1.1s forwards; }
+
+/* ABOUT */
+.about { padding: 10rem 4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 8rem; align-items: start; border-top: 1px solid var(--border2); }
+.about-tag { font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; }
+.about-title { font-family: 'Cormorant Garamond', serif; font-size: 3.2rem; font-weight: 300; line-height: 1.15; margin-bottom: 2rem; }
+.about-text { font-size: .72rem; line-height: 2.2; color: var(--muted); margin-bottom: 1.5rem; }
+.about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
+.stat-num { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; color: var(--accent); line-height: 1; }
+.stat-label { font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-top: .4rem; }
+.about-photo { width: 100%; height: 600px; position: relative; overflow: hidden; border: 1px solid var(--border); }
+.about-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+
+/* SERVICES */
+.services { padding: 8rem 4rem; border-top: 1px solid var(--border2); }
+.section-header { margin-bottom: 5rem; }
+.section-tag { font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+.section-title { font-family: 'Cormorant Garamond', serif; font-size: 3.2rem; font-weight: 300; line-height: 1.1; }
+.services-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border2); }
+.service-card { background: var(--bg); padding: 2.5rem 2rem; position: relative; overflow: hidden; transition: background .4s; }
+.service-card:hover { background: var(--bg3); }
+.service-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--accent), transparent); opacity: 0; transition: opacity .4s; }
+.service-card:hover::after { opacity: 1; }
+.service-num { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; font-weight: 300; color: rgba(201,169,110,0.08); line-height: 1; margin-bottom: 1.5rem; }
+.service-title { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text); margin-bottom: .8rem; }
+.service-desc { font-size: .65rem; line-height: 2.1; color: var(--muted); }
+
+/* PORTFOLIO */
+.work { padding: 8rem 4rem; border-top: 1px solid var(--border2); }
+.work-tabs { display: flex; margin-top: 3rem; margin-bottom: 3.5rem; border-bottom: 1px solid var(--border2); }
+.work-tab { font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); padding: .8rem 2rem; cursor: none; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .3s; background: none; border-top: none; border-left: none; border-right: none; font-family: 'DM Mono', monospace; }
+.work-tab:hover { color: var(--text); }
+.work-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.work-panel { display: none; }
+.work-panel.active { display: block; }
+
+/* BEFORE/AFTER SLIDER */
+.ba-wrap { position: relative; width: 100%; aspect-ratio: 16/7; overflow: hidden; border: 1px solid var(--border); cursor: ew-resize; user-select: none; margin-bottom: 1.5rem; }
+.ba-before, .ba-after { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ba-before img, .ba-after img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+.ba-after { clip-path: inset(0 50% 0 0); }
+.ba-divider { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: var(--accent); transform: translateX(-50%); z-index: 10; pointer-events: none; }
+.ba-handle { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 48px; height: 48px; background: var(--accent); border-radius: 50%; z-index: 11; display: flex; align-items: center; justify-content: center; pointer-events: none; box-shadow: 0 0 0 8px rgba(201,169,110,0.12); }
+.ba-handle svg { width: 18px; height: 18px; }
+.ba-badge { position: absolute; top: 1.5rem; z-index: 9; font-size: .58rem; letter-spacing: .25em; text-transform: uppercase; padding: .4rem 1rem; background: rgba(10,10,8,0.8); backdrop-filter: blur(6px); color: var(--muted); border: 1px solid var(--border); }
+.ba-badge-b { left: 1.5rem; }
+.ba-badge-a { right: 1.5rem; }
+.ba-info { padding: 1.5rem 0 .5rem; }
+.ba-cat { font-size: .6rem; letter-spacing: .28em; text-transform: uppercase; color: var(--accent); margin-bottom: .4rem; }
+.ba-title-text { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300; }
+
+/* WORK GRID */
+.work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.work-item { position: relative; overflow: hidden; background: var(--bg3); border: 1px solid var(--border2); display: flex; align-items: flex-end; aspect-ratio: 4/3; }
+.work-item-wide { grid-column: span 2; aspect-ratio: 16/8; }
+.work-img { position: absolute; inset: 0; }
+.work-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.25,.46,.45,.94); filter: brightness(.75); }
+.work-item:hover .work-img img { transform: scale(1.05); }
+.work-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,8,.88), transparent 55%); }
+.work-info { position: relative; z-index: 2; padding: 1.8rem; width: 100%; }
+.work-cat { font-size: .58rem; letter-spacing: .28em; text-transform: uppercase; color: var(--accent); margin-bottom: .4rem; }
+.work-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300; line-height: 1.2; }
+.work-sub { font-size: .6rem; color: var(--muted); margin-top: .35rem; letter-spacing: .08em; }
+
+/* PRINT GRID */
+.print-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+.print-card { background: var(--bg3); border: 1px solid var(--border2); overflow: hidden; }
+.print-card-img { width: 100%; aspect-ratio: 3/4; background: var(--bg2); overflow: hidden; position: relative; }
+.print-num { font-family: 'Cormorant Garamond', serif; font-size: 5rem; font-weight: 300; color: rgba(201,169,110,0.1); line-height: 1; }
+.print-card-info { padding: 1.2rem 1.5rem 1.5rem; }
+.print-card-cat { font-size: .58rem; letter-spacing: .28em; text-transform: uppercase; color: var(--accent); margin-bottom: .4rem; }
+.print-card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; line-height: 1.3; margin-bottom: .3rem; }
+.print-card-sub { font-size: .6rem; color: var(--muted); letter-spacing: .08em; }
+.placeholder-card { background: var(--bg3); border: 1px solid var(--border2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8rem; aspect-ratio: 3/4; }
+.ph-plus { font-family: 'Cormorant Garamond', serif; font-size: 4rem; font-weight: 300; color: rgba(201,169,110,0.1); }
+.ph-text { font-size: .6rem; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+
+/* PROCESS */
+.process { padding: 8rem 4rem; border-top: 1px solid var(--border2); background: var(--bg2); }
+.process-steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 3rem; margin-top: 5rem; }
+.step-num { font-family: 'Cormorant Garamond', serif; font-size: 5rem; font-weight: 300; color: rgba(201,169,110,0.07); line-height: 1; margin-bottom: 1rem; }
+.step-title { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text); margin-bottom: .75rem; }
+.step-desc { font-size: .68rem; line-height: 2.1; color: var(--muted); }
+
+/* CONTACT */
+.contact { padding: 10rem 4rem; border-top: 1px solid var(--border2); text-align: center; position: relative; overflow: hidden; }
+.contact::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(201,169,110,0.04), transparent 70%); pointer-events: none; }
+.contact-tag { font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; color: var(--accent); margin-bottom: 2rem; }
+.contact-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem,6vw,6rem); font-weight: 300; line-height: 1.1; margin-bottom: 3rem; }
+.contact-title em { font-style: italic; color: var(--accent); }
+.contact-email { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; color: var(--muted); letter-spacing: .05em; margin-bottom: 3rem; display: block; text-decoration: none; transition: color .3s; }
+.contact-email:hover { color: var(--accent); }
+.btn { display: inline-block; padding: 1.2rem 3rem; border: 1px solid var(--accent); color: var(--accent); font-family: 'DM Mono', monospace; font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; transition: all .4s; position: relative; overflow: hidden; }
+.btn::before { content: ''; position: absolute; inset: 0; background: var(--accent); transform: translateX(-100%); transition: transform .4s; z-index: -1; }
+.btn:hover { color: var(--bg); }
+.btn:hover::before { transform: translateX(0); }
+.contact-social { display: flex; justify-content: center; gap: 3rem; margin-top: 4rem; }
+.contact-social a { font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .3s; }
+.contact-social a:hover { color: var(--accent); }
+
+/* FOOTER */
+footer { padding: 2rem 4rem; border-top: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; }
+.footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1rem; letter-spacing: .25em; color: var(--muted); }
+.footer-copy { font-size: .58rem; letter-spacing: .15em; color: var(--muted); }
+
+/* ANIMATIONS */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s, transform .8s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">ŠERÝ <span>VISUAL</span></a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#about" data-cs="O mně" data-en="About">O mně</a></li>
+      <li><a href="#services" data-cs="Služby" data-en="Services">Služby</a></li>
+      <li><a href="#work" data-cs="Portfolio" data-en="Portfolio">Portfolio</a></li>
+      <li><a href="#contact" data-cs="Kontakt" data-en="Contact">Kontakt</a></li>
+    </ul>
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('cs')">CZ</button>
+      <div class="lang-sep"></div>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="theme-btn" onclick="toggleTheme()" title="Přepnout téma">
+      <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24"><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42M12 5a7 7 0 100 14A7 7 0 0012 5z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-line"></div>
+  <div class="hero-ghost">ŠV</div>
+  <div class="hero-tag" data-cs="Jiří Šerý · Grafický designér · Praha" data-en="Jiří Šerý · Graphic Designer · Prague">Jiří Šerý · Grafický designér · Praha</div>
+  <h1 class="hero-title">
+    <span data-cs="Design, který" data-en="Design that">Design, který</span><br>
+    <em data-cs="prodává." data-en="sells.">prodává.</em>
+  </h1>
+  <p class="hero-sub" data-cs="Obalový design, tiskoviny & retuš produktových fotografií pro značky, které chtějí vyniknout." data-en="Packaging design, print materials & product photo retouching for brands that want to stand out.">Obalový design, tiskoviny & retuš produktových fotografií pro značky, které chtějí vyniknout.</p>
+  <span class="hero-scroll">Scroll</span>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="reveal">
+    <div class="about-tag" data-cs="O mně" data-en="About me">O mně</div>
+    <h2 class="about-title">
+      Jiří Šerý –<br>
+      <span data-cs="vizuální řemeslník" data-en="visual craftsman">vizuální řemeslník</span>
+    </h2>
+    <p class="about-text" data-cs="Specializuji se na obalový design, tiskoviny a produktovou retuš, která přeměňuje fotografie na prémiový vizuální obsah. Pracuji s lokálními i mezinárodními klienty." data-en="I specialise in packaging design, print materials and product retouching that transforms photographs into premium visual content. I work with both local and international clients.">Specializuji se na obalový design, tiskoviny a produktovou retuš, která přeměňuje fotografie na prémiový vizuální obsah. Pracuji s lokálními i mezinárodními klienty.</p>
+    <p class="about-text" data-cs="Každý projekt beru jako příležitost vytvořit něco, co zákazníka zastaví a přesvědčí ke koupi." data-en="I treat every project as an opportunity to create something that stops the customer and convinces them to buy.">Každý projekt beru jako příležitost vytvořit něco, co zákazníka zastaví a přesvědčí ke koupi.</p>
+    <div class="about-stats">
+      <div>
+        <div class="stat-num">10+</div>
+        <div class="stat-label" data-cs="Let zkušeností" data-en="Years of experience">Let zkušeností</div>
+      </div>
+      <div>
+        <div class="stat-num">80+</div>
+        <div class="stat-label" data-cs="Projektů" data-en="Projects">Projektů</div>
+      </div>
+      <div>
+        <div class="stat-num">30+</div>
+        <div class="stat-label" data-cs="Klientů" data-en="Clients">Klientů</div>
+      </div>
+      <div>
+        <div class="stat-num">100%</div>
+        <div class="stat-label" data-cs="Vrací se" data-en="Return rate">Vrací se</div>
+      </div>
+    </div>
+  </div>
+  <div class="about-photo reveal">
+    <img src="portrait_styled.jpg" alt="Jiří Šerý">
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="section-header reveal">
+    <div class="section-tag" data-cs="Co dělám" data-en="What I do">Co dělám</div>
+    <h2 class="section-title" data-cs="Služby" data-en="Services">Služby</h2>
+  </div>
+  <div class="services-grid reveal">
+    <div class="service-card">
+      <div class="service-num">01</div>
+      <div class="service-title" data-cs="Obalový design" data-en="Packaging design">Obalový design</div>
+      <div class="service-desc" data-cs="Komplexní návrh obalů od konceptu po tiskové podklady. Rozvinuté šablony, ikonografie, vícejazyčné verze." data-en="Full packaging design from concept to print-ready files. Dieline templates, iconography, multilingual versions.">Komplexní návrh obalů od konceptu po tiskové podklady. Rozvinuté šablony, ikonografie, vícejazyčné verze.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">02</div>
+      <div class="service-title" data-cs="Tiskoviny" data-en="Print materials">Tiskoviny</div>
+      <div class="service-desc" data-cs="Letáky, plakáty, katalogy, inzerce. Tiskové podklady připravené na míru pro každé médium a formát." data-en="Leaflets, posters, catalogues, advertisements. Print-ready files tailored for every medium and format.">Letáky, plakáty, katalogy, inzerce. Tiskové podklady připravené na míru pro každé médium a formát.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">03</div>
+      <div class="service-title" data-cs="Produktová retuš" data-en="Product retouching">Produktová retuš</div>
+      <div class="service-desc" data-cs="Profesionální úprava produktových fotografií pro e-shopy, Amazon, Alza, Mall. Čisté pozadí, dokonalé světlo." data-en="Professional product photo editing for e-commerce, Amazon and online stores. Clean backgrounds, perfect lighting.">Profesionální úprava produktových fotografií pro e-shopy, Amazon, Alza, Mall. Čisté pozadí, dokonalé světlo.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">04</div>
+      <div class="service-title" data-cs="Social media" data-en="Social media">Social media</div>
+      <div class="service-desc" data-cs="Vizuální obsah pro Instagram, LinkedIn a TikTok. Konzistentní brand identity napříč platformami." data-en="Visual content for Instagram, LinkedIn and TikTok. Consistent brand identity across all platforms.">Vizuální obsah pro Instagram, LinkedIn a TikTok. Konzistentní brand identity napříč platformami.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="work" id="work">
+  <div class="section-header reveal">
+    <div class="section-tag" data-cs="Vybrané projekty" data-en="Selected projects">Vybrané projekty</div>
+    <h2 class="section-title" data-cs="Portfolio" data-en="Portfolio">Portfolio</h2>
+  </div>
+  <div class="work-tabs reveal">
+    <button class="work-tab active" onclick="switchTab('retusz',this)" data-cs="Retuš" data-en="Retouching">Retuš</button>
+    <button class="work-tab" onclick="switchTab('obal',this)" data-cs="Obalový design" data-en="Packaging">Obalový design</button>
+    <button class="work-tab" onclick="switchTab('tisk',this)" data-cs="Tiskoviny" data-en="Print">Tiskoviny</button>
+  </div>
+
+  <!-- RETUSZ -->
+  <div class="work-panel active" id="panel-retusz">
+    <div class="ba-wrap" id="baWrap">
+      <div class="ba-before"><img src="pred.png" alt="Před"></div>
+      <div class="ba-after" id="baAfter"><img src="po.png" alt="Po"></div>
+      <div class="ba-divider" id="baDivider"></div>
+      <div class="ba-handle" id="baHandle">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M9 6L4 12L9 18M15 6L20 12L15 18" stroke="#0a0a08" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="ba-badge ba-badge-b" data-cs="Před" data-en="Before">Před</div>
+      <div class="ba-badge ba-badge-a" data-cs="Po" data-en="After">Po</div>
+    </div>
+    <div class="ba-info">
+      <div class="ba-cat" data-cs="Produktová retuš · Tescoma" data-en="Product retouching · Tescoma">Produktová retuš · Tescoma</div>
+      <div class="ba-title-text">Air Fryer President</div>
+    </div>
+  </div>
+
+  <!-- OBAL -->
+  <div class="work-panel" id="panel-obal">
+    <div class="work-grid">
+      <div class="work-item work-item-wide">
+        <div class="work-img"><img src="obalovy_design.png" alt="Tescoma President obal"></div>
+        <div class="work-overlay"></div>
+        <div class="work-info">
+          <div class="work-cat" data-cs="Obalový design · Rozvinutý tvar krabice" data-en="Packaging design · Dieline">Obalový design · Rozvinutý tvar krabice</div>
+          <div class="work-title">Tescoma President Air Fryer</div>
+          <div class="work-sub" data-cs="Tiskové podklady · Vícejazyčná verze · Ikonografie · CMYK" data-en="Print-ready · Multilingual · Iconography · CMYK">Tiskové podklady · Vícejazyčná verze · Ikonografie · CMYK</div>
+        </div>
+      </div>
+      <div class="placeholder-card"><div class="ph-plus">+</div><div class="ph-text" data-cs="Další projekt" data-en="Next project">Další projekt</div></div>
+      <div class="placeholder-card"><div class="ph-plus">+</div><div class="ph-text" data-cs="Další projekt" data-en="Next project">Další projekt</div></div>
+    </div>
+  </div>
+
+  <!-- TISKOVINY -->
+  <div class="work-panel" id="panel-tisk">
+    <div class="print-grid">
+      <div class="print-card">
+        <div class="print-card-img"><img src="inzerce.png" alt="SteelCRAFT inzerát" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block"></div>
+        <div class="print-card-info">
+          <div class="print-card-cat" data-cs="Inzerát · Tescoma" data-en="Ad · Tescoma">Inzerát · Tescoma</div>
+          <div class="print-card-title">SteelCRAFT Pánve</div>
+          <div class="print-card-sub" data-cs="Tiskový inzerát A4 · Produktová fotografie · Sazba" data-en="Print ad A4 · Product photography · Typesetting">Tiskový inzerát A4 · Produktová fotografie · Sazba</div>
+        </div>
+      </div>
+      <div class="print-card">
+        <div class="print-card-img"><img src="inzerce2.png" alt="Bordeaux inzerát" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block"></div>
+        <div class="print-card-info">
+          <div class="print-card-cat" data-cs="Inzerát · Tescoma" data-en="Ad · Tescoma">Inzerát · Tescoma</div>
+          <div class="print-card-title">Bordeaux Nádobí</div>
+          <div class="print-card-sub" data-cs="Tiskový inzerát A4 · Kompozice produktu · Sazba" data-en="Print ad A4 · Product composition · Typesetting">Tiskový inzerát A4 · Kompozice produktu · Sazba</div>
+        </div>
+      </div>
+      <div class="print-card">
+        <div class="print-card-img"><img src="letak.png" alt="Tescoma leták" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block"></div>
+        <div class="print-card-info">
+          <div class="print-card-cat" data-cs="Leták · Tescoma" data-en="Leaflet · Tescoma">Leták · Tescoma</div>
+          <div class="print-card-title" data-cs="Týden s Tescomou 2023" data-en="Tescoma Week 2023">Týden s Tescomou 2023</div>
+          <div class="print-card-sub" data-cs="Vícestr. leták · Akční ceny · Produktová sazba" data-en="Multi-page leaflet · Promotional prices · Layout">Vícestr. leták · Akční ceny · Produktová sazba</div>
+        </div>
+      </div>
+      <div class="placeholder-card"><div class="ph-plus">+</div><div class="ph-text" data-cs="Plakát" data-en="Poster">Plakát</div></div>
+      <div class="placeholder-card"><div class="ph-plus">+</div><div class="ph-text" data-cs="Katalog" data-en="Catalogue">Katalog</div></div>
+      <div class="placeholder-card"><div class="ph-plus">+</div><div class="ph-text" data-cs="Další projekt" data-en="Next project">Další projekt</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCES -->
+<section class="process">
+  <div class="section-header reveal">
+    <div class="section-tag" data-cs="Jak pracuji" data-en="How I work">Jak pracuji</div>
+    <h2 class="section-title" data-cs="Proces" data-en="Process">Proces</h2>
+  </div>
+  <div class="process-steps">
+    <div class="reveal">
+      <div class="step-num">01</div>
+      <div class="step-title" data-cs="Brief" data-en="Brief">Brief</div>
+      <div class="step-desc" data-cs="Zjistím vše o produktu, cílovce a vašich cílech. Čím víc vím, tím lépe." data-en="I learn everything about your product, audience and goals. The more I know, the better.">Zjistím vše o produktu, cílovce a vašich cílech. Čím víc vím, tím lépe.</div>
+    </div>
+    <div class="reveal">
+      <div class="step-num">02</div>
+      <div class="step-title" data-cs="Návrh" data-en="Design">Návrh</div>
+      <div class="step-desc" data-cs="Připravím 2–3 koncepty k výběru. Vybíráte to, co vám sedí nejlépe." data-en="I prepare 2–3 concepts for you to choose from. You pick what suits you best.">Připravím 2–3 koncepty k výběru. Vybíráte to, co vám sedí nejlépe.</div>
+    </div>
+    <div class="reveal">
+      <div class="step-num">03</div>
+      <div class="step-title" data-cs="Revize" data-en="Revisions">Revize</div>
+      <div class="step-desc" data-cs="Dolaďujeme až do dokonalosti. Standardně 2 kola revizí v ceně." data-en="We refine until it's perfect. Two rounds of revisions included as standard.">Dolaďujeme až do dokonalosti. Standardně 2 kola revizí v ceně.</div>
+    </div>
+    <div class="reveal">
+      <div class="step-num">04</div>
+      <div class="step-title" data-cs="Předání" data-en="Delivery">Předání</div>
+      <div class="step-desc" data-cs="Finální soubory ve všech potřebných formátech. Připraveno k tisku nebo online." data-en="Final files in all required formats. Ready for print or online use.">Finální soubory ve všech potřebných formátech. Připraveno k tisku nebo online.</div>
+    </div>
+  </div>
+</section>
+
+<!-- KONTAKT -->
+<section class="contact" id="contact">
+  <div class="contact-tag reveal" data-cs="Pojďme spolupracovat" data-en="Let's work together">Pojďme spolupracovat</div>
+  <h2 class="contact-title reveal">
+    <span data-cs="Máte projekt?" data-en="Got a project?">Máte projekt?</span><br>
+    <em data-cs="Napište mi." data-en="Let's talk.">Napište mi.</em>
+  </h2>
+  <a class="contact-email reveal" href="mailto:jiri.sery@gmail.com">jiri.sery@gmail.com</a>
+  <a href="mailto:jiri.sery@gmail.com" class="btn reveal" data-cs="Spustit projekt" data-en="Start a project">Spustit projekt</a>
+  <div class="contact-social reveal">
+    <a href="#">Behance</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Instagram</a>
+    <a href="#">Fiverr</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">ŠERÝ VISUAL</div>
+  <div class="footer-copy" data-cs="© 2026 Jiří Šerý · Praha" data-en="© 2026 Jiří Šerý · Prague">© 2026 Jiří Šerý · Praha</div>
+</footer>
+
+<script>
+// Theme toggle
+function toggleTheme() {
+  document.documentElement.classList.toggle('light');
+  localStorage.setItem('theme', document.documentElement.classList.contains('light') ? 'light' : 'dark');
+}
+// Default dark – no saved preference needed, but respect if user switched before
+if (localStorage.getItem('theme') === 'light') {
+  document.documentElement.classList.add('light');
+}
+
+// Cursor
+const cur = document.getElementById('cur');
+const cur2 = document.getElementById('cur2');
+document.addEventListener('mousemove', function(e) {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top = e.clientY + 'px';
+  cur2.style.left = e.clientX + 'px';
+  cur2.style.top = e.clientY + 'px';
+});
+document.querySelectorAll('a, button, .work-item, .service-card, .ba-wrap, .print-card').forEach(function(el) {
+  el.addEventListener('mouseenter', function() { cur2.style.width = '56px'; cur2.style.height = '56px'; });
+  el.addEventListener('mouseleave', function() { cur2.style.width = '32px'; cur2.style.height = '32px'; });
+});
+
+// Scroll reveal
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+
+// Language switcher
+function setLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelector('.lang-btn[onclick="setLang(\'' + lang + '\')"]').classList.add('active');
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-' + lang + ']').forEach(function(el) {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+}
+
+// Portfolio tabs
+function switchTab(id, btn) {
+  document.querySelectorAll('.work-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.work-tab').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Before/After slider
+var wrap = document.getElementById('baWrap');
+var after = document.getElementById('baAfter');
+var divider = document.getElementById('baDivider');
+var handle = document.getElementById('baHandle');
+var drag = false;
+
+// Zabránit přesunu obrázků v prohlížeči
+wrap.querySelectorAll('img').forEach(function(img) {
+  img.addEventListener('dragstart', function(e) { e.preventDefault(); });
+});
+
+function setPos(x) {
+  var r = wrap.getBoundingClientRect();
+  var p = ((x - r.left) / r.width) * 100;
+  p = Math.min(Math.max(p, 0), 100);
+  after.style.clipPath = 'inset(0 ' + (100 - p) + '% 0 0)';
+  divider.style.left = p + '%';
+  handle.style.left = p + '%';
+}
+wrap.addEventListener('mousedown', function(e) { drag = true; setPos(e.clientX); });
+window.addEventListener('mousemove', function(e) { if (drag) setPos(e.clientX); });
+window.addEventListener('mouseup', function() { drag = false; });
+wrap.addEventListener('touchstart', function(e) { drag = true; setPos(e.touches[0].clientX); }, { passive: true });
+window.addEventListener('touchmove', function(e) { if (drag) setPos(e.touches[0].clientX); }, { passive: true });
+window.addEventListener('touchend', function() { drag = false; });
+</script>
+</body>
+</html>
